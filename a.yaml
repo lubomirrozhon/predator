@@ -1,0 +1,342 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Systems service API
+tags:
+  - name: Systems service API
+    description: |
+      systems
+
+servers:
+  - url: https://api.paymentsos.com
+  - url: http://api-{cluster}.paymentsos.com
+    variables:
+      cluster:
+        default: mars
+        enum:
+          - dev
+          - qa
+          - mars
+security:
+  - bearerAuth: []
+
+paths:
+  '/accounts/{account-id}/systems':
+    get:
+      security:
+        - permission:
+            - account.systems.create
+      parameters:
+        - $ref: '#/components/parameters/account-id'
+      operationId: get-system-versions
+      tags:
+        - SYSTEM
+      summary: retrieve all versions
+      description: retrive all versions belongs to the system
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/system_resource'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error_response'
+        '401':
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error_response'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error_response'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error_response'
+    post:
+      security:
+        - permission:
+            - account.systems.create
+      parameters:
+        - $ref: '#/components/parameters/account-id'
+      operationId: create-system
+      tags:
+        - SYSTEM
+      summary: create new system
+      description: this endpoint generates new system
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/system_resource'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error_response'
+        '401':
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error_response'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error_response'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error_response'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/system_resource'
+        description: The resource to create
+        required: true
+
+  '/accounts/{account-id}/systems/{name}':
+    get:
+      security:
+        - permission:
+            - account.systems.get
+      parameters:
+        - $ref: "#/components/parameters/account-id"
+        - $ref: "#/components/parameters/name"
+
+      operationId: get-system-versions by name
+      tags:
+        - SYSTEM
+      summary: retrieve all versions by name
+      description: retrive all versions belongs to the system by name
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/system_resource'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error_response'
+        '401':
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error_response'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error_response'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error_response'
+
+  '/accounts/{account-id}/systems/{name}/versions/{version}':
+    get:
+      security:
+        - permission:
+            - account.systems.get
+      parameters:
+        - $ref: "#/components/parameters/account-id"
+        - $ref: "#/components/parameters/name"
+        - $ref: "#/components/parameters/version"
+      operationId: get-system by version
+      tags:
+        - SYSTEM
+      summary: retrieve specific version
+      description: retrieve specific version of system
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/system_resource'
+
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error_response'
+        '401':
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error_response'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error_response'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error_response'
+
+
+    delete:
+      security:
+        - permission:
+            - account.systems.delete
+      parameters:
+        - $ref: "#/components/parameters/account-id"
+        - $ref: "#/components/parameters/version"
+        - $ref: "#/components/parameters/name"
+      operationId: delete-system
+      tags:
+        - SYSTEM
+      summary: delete version
+      description: delete version
+      responses:
+        '204':
+          description: Deleted
+        '401':
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error_response'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error_response'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error_response'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error_response'
+
+
+components:
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Enter your bearer token in the format **Bearer &lt;token>**
+
+  parameters:
+    account-id:
+      name: account-id
+      in: path
+      required: true
+      description: merchant id
+      schema:
+        type: string
+
+    x-zooz-request-id:
+      name: x-zooz-request-id
+      in: header
+      required: true
+      description: merchant id
+      schema:
+        type: string
+
+    name:
+      name: name
+      in: path
+      required: true
+      description: name of key
+      schema:
+        type: string
+        maximum: 20
+
+
+    version:
+      name: version
+      in: path
+      required: true
+      description: version of key
+      schema:
+        type: integer
+
+
+  schemas:
+    system_resource:
+      type: object
+      required:
+        - certificates
+        - name
+        - permissions
+      properties:
+        name:
+          type: string
+          maximum: 20
+        certificates:
+          type: array
+          maxLen
+          maximum: 1000
+          description: to do
+        permissions:
+          type: array
+          items:
+            $ref: '#/components/schemas/permission'
+          example: ["payouts.create", "payouts.get"]
+        version:
+          type: string
+          readOnly: true
+        created:
+          type: string
+          readOnly: true
+        updated:
+          type: string
+          readOnly: true
+
+    permission:
+      description: The name of the permission
+      type: string
+
+    error_response:
+      required:
+        - message
+      properties:
+        message:
+          type: string

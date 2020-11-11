@@ -15,9 +15,13 @@ module.exports = {
     subscribeRunner,
     updateSubscriberWithStats,
     updateSubscriber,
-    updateReportBenchmark
-
+    updateReportBenchmark,
+    insertTrends,
 };
+
+function insertTrends(testId, reportId, trends, contextId) {
+    return databaseConnector.insertTrends(testId, reportId, trends, contextId);
+}
 
 function insertReport(reportId, testId, revisionId, jobId, testType, phase, startTime, testName, testDescription, testConfiguration, notes, lastUpdatedAt, isFavorite, contextId) {
     return databaseConnector.insertReport(reportId, testId, revisionId, jobId, testType, phase, startTime, testName, testDescription, testConfiguration, notes, lastUpdatedAt, isFavorite, contextId);

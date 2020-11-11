@@ -20,12 +20,30 @@ module.exports = {
     subscribeRunner,
     updateSubscriberWithStats,
     updateSubscriber,
-    updateReportBenchmark
+    updateReportBenchmark,
+    insertTrends,
+
 };
 
 async function init(sequlizeClient) {
     client = sequlizeClient;
     await initSchemas();
+}
+
+async function insertTrends(testId, reportId, trends, contextId) {
+    const report = client.model('report');
+    const options = {
+        where: {
+            test_id: testId,
+            report_id: reportId
+        }
+    };
+
+    if (contextId) {
+        options.where.context_id = contextId;
+    }
+
+    return report.update({trends: JSON.stringify(trends)}, options);
 }
 
 async function insertReport(reportId, testId, revisionId, jobId, testType, phase, startTime, testName, testDescription, testConfiguration, notes, lastUpdatedAt, isFavorite, contextId) {
@@ -287,7 +305,8 @@ async function initSchemas() {
         },
         data: {
             type: Sequelize.DataTypes.TEXT('long')
-        }
+        },
+
     });
 
     const subscriber = client.define('subscriber', {
@@ -352,6 +371,9 @@ async function initSchemas() {
         },
         context_id: {
             type: Sequelize.DataTypes.STRING
+        },
+        trends: {
+            type: Sequelize.DataTypes.TEXT('long')
         }
     });
 
