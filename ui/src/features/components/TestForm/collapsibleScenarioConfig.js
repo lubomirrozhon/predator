@@ -6,8 +6,9 @@ import style from './scenarioList.scss';
 import CollapsibleItem from '../../../components/CollapsibleItem/CollapsibleItem';
 import StepForm from './StepForm';
 import AddScenarioForm from "./addScenarioForm";
+import { RepeatTest } from '../RepeatTest';
 
-const actions = ['Delete', 'Duplicate'];
+const actions = ['Delete', 'Duplicate', 'Retry'];
 const Section = CollapsibleItem.Section
 
 const sections = [
@@ -37,7 +38,8 @@ export default class CollapsibleScenarioConfig extends React.Component {
             <Section key={1} onClick={(evt) => {
                 evt.stopPropagation();
                 onDuplicateScenario()
-            }} icon='fa-copy' tooltip='Duplicate scenario'/>
+            }} icon='fa-copy' tooltip='Duplicate scenario'/>,
+            <RepeatTest key={5} />
         ]
 
         if(onDeleteScenario){
