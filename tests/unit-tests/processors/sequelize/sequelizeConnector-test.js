@@ -94,10 +94,19 @@ describe('Sequelize client tests', function () {
             should(sequelizeGetStub.calledOnce).eql(true);
             should(sequelizeGetStub.args[0][0]).containDeep({ offset, limit, attributes: { exclude: ['javascript'] } });
         });
+
+        it('Validate sequelize passed arguments with processor id', async () => {
+            const limit = 25;
+            const offset = 10;
+            const context_id = 5;
+            await sequelizeConnector.getAllProcessors(offset, limit, '', context_id);
+            should(sequelizeGetStub.calledOnce).eql(true);
+            should(sequelizeGetStub.args[0][0]).containDeep({ offset, limit, order: [  ['created_at', 'DESC'] ],where: {context_id}});
+        });
     });
 
     describe('Get specific Processors', () => {
-        describe('getProcessorById', function() {
+        describe('getProcessorById', function () {
             it('Validate sequelize passed arguments', async () => {
                 sequelizeGetStub.returns([processor]);
                 const processorId = processor.id;
@@ -106,7 +115,17 @@ describe('Sequelize client tests', function () {
                 should(sequelizeGetStub.args[0][0]).containDeep({ where: { id: processorId } });
             });
         });
-        describe('getProcessorByName', function() {
+        describe('getProcessorById With ContextId', function () {
+            it('Validate sequelize passed arguments', async () => {
+                sequelizeGetStub.returns([processor]);
+                const processorId = processor.id;
+                const context_id = 5;
+                await sequelizeConnector.getProcessorById(processorId, context_id);
+                should(sequelizeGetStub.calledOnce).eql(true);
+                should(sequelizeGetStub.args[0][0]).containDeep({ where: { id: processorId } });
+            });
+        });
+        describe('getProcessorByName', function () {
             it('Validate sequelize passed arguments', async () => {
                 sequelizeGetStub.returns([processor]);
                 const processorName = processor.name;
@@ -115,15 +134,25 @@ describe('Sequelize client tests', function () {
                 should(sequelizeGetStub.args[0][0]).containDeep({ where: { name: processorName } });
             });
         });
-    });
+        describe('getProcessorByName With ContextId', function () {
+            it('Validate sequelize passed arguments', async () => {
+                sequelizeGetStub.returns([processor]);
+                const processorName = processor.name;
+                const context_id = 5;
+                await sequelizeConnector.getProcessorByName(processorName, context_id);
+                should(sequelizeGetStub.calledOnce).eql(true);
+                should(sequelizeGetStub.args[0][0]).containDeep({ where: { name: processorName } });
+            });
+        });
 
-    describe('Insert a processor', () => {
-        it('Happy flow', async () => {
-            await sequelizeConnector.insertProcessor(processor.id, processor);
-            const paramsArg = sequelizeCreateStub.args[0][0];
-            should(sequelizeCreateStub.calledOnce).eql(true);
-            should(paramsArg).containDeep(processorRaw);
-            should(paramsArg).has.properties(['created_at', 'updated_at']);
+        describe('Insert a processor', () => {
+            it('Happy flow', async () => {
+                await sequelizeConnector.insertProcessor(processor.id, processor);
+                const paramsArg = sequelizeCreateStub.args[0][0];
+                should(sequelizeCreateStub.calledOnce).eql(true);
+                should(paramsArg).containDeep(processorRaw);
+                should(paramsArg).has.properties(['created_at', 'updated_at']);
+            });
         });
     });
 

@@ -110,6 +110,28 @@ describe('webhooksFormatter', function () {
 
                 expect(payload.text).to.be.equal(expectedResult);
             });
+            it(WEBHOOK_EVENT_TYPE_FINISHED + " grafana report ", function () {
+                const testId = uuid.v4();
+                const report = {
+                    test_name: 'some name',
+                    grafana_report: "graf"
+                };
+                const additionalInfo = {
+                    aggregatedReport: {
+                        aggregate: {
+                            key: 'value'
+                        }
+                    }
+                };
+                const stats = 'some stats string';
+                statsFormatterStub.returns(stats);
+
+                const expectedResult = `😎 *Test ${report.test_name} with id: ${testId} is finished.*\n ${stats}\n` + `<graf | View final grafana dashboard report>`;
+
+                const payload = webhooksFormatter.format(EVENT_FORMAT_TYPE_SLACK, WEBHOOK_EVENT_TYPE_FINISHED, uuid.v4(), testId, report, additionalInfo);
+
+                expect(payload.text).to.be.equal(expectedResult);
+            });
             it(WEBHOOK_EVENT_TYPE_BENCHMARK_FAILED, function () {
                 const testId = uuid.v4();
                 const report = {
@@ -226,6 +248,32 @@ describe('webhooksFormatter', function () {
                 expect(payload.text).to.be.equal(expectedResult);
             });
         });
+        describe("Bad Event Format Type", function () {
+            it('Insert Bad Evenet Format and Check Error ', function () {
+                const testId = uuid.v4();
+                const jobId = uuid.v4();
+                const report = {
+                    ramp_to: 100,
+                    test_name: 'some test name',
+                    arrival_rate: 5,
+                    duration: 120,
+                    environment: 'test',
+                    parallelism: 10
+                };
+                const expectedResult = {
+                    text: `&#x1F603; *Test ${report.test_name} with id: ${testId} has started*.   \n*test configuration:* environment: ${report.environment} duration: ${report.duration} seconds, arrival rate: ${report.arrival_rate} scenarios per second, ramp to: ${report.ramp_to} scenarios per second, number of runners: ${report.parallelism}`,
+                    themeColor: '957c58'
+                };
+                let err;
+                try {
+                    const error = webhooksFormatter.format("BadFormatType", WEBHOOK_EVENT_TYPE_STARTED, jobId, testId, report);
+                }
+                catch (e){
+                    err = e;
+                }
+                expect(err.toString()).to.be.eql("Error: Unrecognized webhook format: BadFormatType, available options: slack,json,teams,discord");
+            });
+        });
         describe(EVENT_FORMAT_TYPE_TEAMS, function () {
             it(WEBHOOK_EVENT_TYPE_STARTED + ' - load test', function () {
                 const testId = uuid.v4();
@@ -298,6 +346,32 @@ describe('webhooksFormatter', function () {
                     text: `&#x1F60E; *Test ${report.test_name} with id: ${testId} is finished.*   \nsome stats string`,
                     themeColor: '957c58'
                 };
+
+                const payload = webhooksFormatter.format(EVENT_FORMAT_TYPE_TEAMS, WEBHOOK_EVENT_TYPE_FINISHED, uuid.v4(), testId, report, additionalInfo);
+
+                expect(payload).to.eql(expectedResult);
+            });
+            it(WEBHOOK_EVENT_TYPE_FINISHED + " grafana report", function () {
+                const testId = uuid.v4();
+                const report = {
+                    test_name: 'some name',
+                    grafana_report: "grafana"
+                };
+                const additionalInfo = {
+                    aggregatedReport: {
+                        aggregate: {
+                            key: 'value'
+                        }
+                    }
+                };
+                const stats = 'some stats string';
+                statsFormatterStub.returns(stats);
+
+                const expectedResult = {
+                    text: `&#x1F60E; *Test ${report.test_name} with id: ${testId} is finished.*   \nsome stats string   ` + `\n<grafana | View final grafana dashboard report>`,
+                    themeColor: '957c58'
+                };
+
 
                 const payload = webhooksFormatter.format(EVENT_FORMAT_TYPE_TEAMS, WEBHOOK_EVENT_TYPE_FINISHED, uuid.v4(), testId, report, additionalInfo);
 
@@ -571,6 +645,28 @@ describe('webhooksFormatter', function () {
                 statsFormatterStub.returns(stats);
 
                 const expectedResult = `😎 *Test ${report.test_name} with id: ${testId} is finished.*\n ${stats}\n`;
+
+                const payload = webhooksFormatter.format(EVENT_FORMAT_TYPE_DISCORD, WEBHOOK_EVENT_TYPE_FINISHED, uuid.v4(), testId, report, additionalInfo);
+
+                expect(payload.content).to.be.equal(expectedResult);
+            });
+            it(WEBHOOK_EVENT_TYPE_FINISHED + " grafana report", function () {
+                const testId = uuid.v4();
+                const report = {
+                    test_name: 'some name',
+                    grafana_report: "grafana"
+                };
+                const additionalInfo = {
+                    aggregatedReport: {
+                        aggregate: {
+                            key: 'value'
+                        }
+                    }
+                };
+                const stats = 'some stats string';
+                statsFormatterStub.returns(stats);
+
+                const expectedResult = `😎 *Test ${report.test_name} with id: ${testId} is finished.*\n ${stats}\n` + `<grafana | View final grafana dashboard report>`;
 
                 const payload = webhooksFormatter.format(EVENT_FORMAT_TYPE_DISCORD, WEBHOOK_EVENT_TYPE_FINISHED, uuid.v4(), testId, report, additionalInfo);
 

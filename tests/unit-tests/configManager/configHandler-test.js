@@ -127,12 +127,14 @@ describe('Manager config', function () {
     let databaseConnectorGetStub;
     let databaseConnectorGetValueStub;
     let databaseConnectorUpdateStub;
+    let databaseConnectorDeleteStub;
 
     before(() => {
         sandbox = sinon.sandbox.create();
         databaseConnectorGetStub = sandbox.stub(databaseConnector, 'getConfigAsObject');
         databaseConnectorGetValueStub = sandbox.stub(databaseConnector, 'getConfigValue');
         databaseConnectorUpdateStub = sandbox.stub(databaseConnector, 'updateConfig');
+        databaseConnectorDeleteStub = sandbox.stub(databaseConnector, 'deleteConfig');
         warnLoggerStub = sandbox.stub(logger, 'warn');
         manager = rewire('../../../src/configManager/models/configHandler');
         packageJson.version = '1.5.6';
@@ -218,6 +220,15 @@ describe('Manager config', function () {
             should(warnLoggerStub.args[0][0]).equal(WARN_MESSAGES.BAD_RUNNER_IMAGE);
         });
     });
+
+    describe('delete config', function () {
+        it('delete config success', async () => {
+            databaseConnectorDeleteStub.resolves([]);
+
+            const result = await manager.deleteConfig({runner_cpu: 'test_runner_cpu'})
+            should(result).eql([]);
+        });
+    })
 
     describe('convert data to object from db data and default', function () {
         it('get config  values ', async () => {
