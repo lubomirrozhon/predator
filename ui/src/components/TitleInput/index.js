@@ -20,9 +20,8 @@ const ParentWrap = ({ wrap, style, children }) => {
 }
 
 const TitleInput = ({ title, style, labelStyle, width, height, disabled, className, children, prefix, suffix, alert, leftComponent, rightComponent, ...rest }) => {
-  const childrenExist = Boolean(children)
   return (
-    <ParentWrap style={style} wrap={childrenExist}>
+    <ParentWrap style={style} wrap={Boolean(children)}>
       <div style={{
         display: 'flex',
         alignItems: 'center',

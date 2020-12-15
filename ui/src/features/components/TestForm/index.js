@@ -63,7 +63,7 @@ export class TestForm extends React.Component {
   }
 
     hasValidationErrors = () => {
-      return !(this.state.baseUrl ? isUrlValid(this.state.baseUrl) : true);
+      return !Object.values(this.state.urls).some((url) => isUrlValid(url.value));
     };
 
     isButtonDisabled = () => {
@@ -416,12 +416,7 @@ export class TestForm extends React.Component {
 
       const currentCsvFile = csvFile || (csvMetadata ? { name: csvMetadata.filename } : undefined);
 
-      let tabsData;
-      if (before) {
-        tabsData = [before, ...scenarios];
-      } else {
-        tabsData = [...scenarios];
-      }
+      let tabsData = (before) ?  [before, ...scenarios] : [...scenarios];
 
       const activeTabKey = currentScenarioIndex === null ? before.id : scenarios[currentScenarioIndex] && scenarios[currentScenarioIndex].id;
       return (
@@ -583,4 +578,4 @@ const mapDispatchToProps = {
   clearAllSuccessOperationsState: Actions.clearAllSuccessOperationsState
 
 };
-export default connect(mapStateToProps, mapDispatchToProps)(TestForm);
+export default React.memo(connect(mapStateToProps, mapDispatchToProps)(TestForm));
