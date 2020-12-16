@@ -223,10 +223,10 @@ describe('Manager config', function () {
 
     describe('delete config', function () {
         it('delete config success', async () => {
-            databaseConnectorDeleteStub.resolves([]);
+            databaseConnectorDeleteStub.resolves({runner_cpu: 'test_runner_cpu'});
 
             const result = await manager.deleteConfig({runner_cpu: 'test_runner_cpu'})
-            should(result).eql([]);
+            should(result).eql({runner_cpu: 'test_runner_cpu'});
         });
     })
 
